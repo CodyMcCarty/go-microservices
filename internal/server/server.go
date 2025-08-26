@@ -36,6 +36,7 @@ type Server interface {
 
 	// GetAllVendors (cody) in Server interface
 	GetAllVendors(ctx echo.Context) error
+	AddVendor(ctx echo.Context) error
 }
 
 // (cody)
@@ -61,6 +62,7 @@ func (s *EchoServer) registerRoutes() {
 
 	vg := s.echo.Group("/vendors")
 	vg.GET("", s.GetAllVendors)
+	vg.POST("", s.AddVendor)
 }
 
 // EchoServer (cody)

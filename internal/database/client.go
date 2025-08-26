@@ -31,6 +31,7 @@ type DatabaseClient interface {
 
 	// GetAllVendors (cody) in DatabaseClient interface
 	GetAllVendors(ctx context.Context) ([]models.Vendor, error)
+	AddVendor(ctx context.Context, vendor *models.Vendor) (*models.Vendor, error)
 }
 
 // Client (cody)
