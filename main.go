@@ -12,6 +12,7 @@ import (
 multiple dbs
 main app with 1 or 2 microservices.
 config file, along with other comments in *customer
+logs to include which user updated customer and when, etc.
 */
 
 func main() {

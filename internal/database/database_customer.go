@@ -8,6 +8,7 @@ import (
 	"github.com/CodyMcCarty/go-microservices/internal/models"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // GetAllCustomers (cody) /database on Client model and added to DatabaseClient interface.
@@ -38,7 +39,6 @@ func (c Client) AddCustomer(ctx context.Context, customer *models.Customer) (*mo
 }
 
 // GetCustomerById (cody) returns ptr
-
 func (c Client) GetCustomerById(ctx context.Context, ID string) (*models.Customer, error) {
 	customer := &models.Customer{}
 	result := c.DB.WithContext(ctx).
@@ -51,4 +51,41 @@ func (c Client) GetCustomerById(ctx context.Context, ID string) (*models.Custome
 		return nil, result.Error
 	}
 	return customer, nil
+}
+
+// UpdateCustomer (cody) takes ptr, returns ptr.
+// update is something you have to spend time to think about.
+// why slice of customers?
+// we will guard against modifying the customerID in the web layer.
+// emails are not unique in our db, but they should be
+// Updates() doesn't have to include everything i.e. ID.
+// why are the err switch err.(type) sometimes and if errors.Is other times?
+// we return [0] to be sure that we get the obj that returns. 2.UpdateOp 4:30. what does that mean?
+// the way he does it is broken. I bandaid it. Need to find propper way.
+func (c Client) UpdateCustomer(ctx context.Context, customer *models.Customer) (*models.Customer, error) {
+	var customers []models.Customer
+
+	result := c.DB.WithContext(ctx).
+		Clauses(clause.Returning{}).
+		Where(&models.Customer{CustomerID: customer.CustomerID}).
+		Updates(&models.Customer{
+			FirstName: customer.FirstName,
+			LastName:  customer.LastName,
+			Email:     customer.Email,
+			Phone:     customer.Phone,
+			Address:   customer.Address,
+		}).
+		Scan(&customers)
+
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
+			return nil, &dberrors.ConflictError{}
+		}
+		return nil, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return nil, &dberrors.NotFoundError{Entity: "customer", ID: customer.CustomerID}
+	}
+
+	return &customers[0], nil
 }

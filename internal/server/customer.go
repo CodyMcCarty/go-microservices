@@ -95,3 +95,59 @@ func (s *EchoServer) GetCustomerById(ctx echo.Context) error {
 	}
 	return ctx.JSON(http.StatusOK, customer)
 }
+
+/* PUT in chrome console:
+fetch("http://localhost:8080/customers/ab27bb60-25f7-44a8-818f-e3f84b53aaa1", {
+  method: "PUT",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    customerId: "ab27bb60-25f7-44a8-818f-e3f84b53aaa1",
+    firstName: "Cally",
+    lastName: "Reynolds",
+    emailAddress: "penatibus.et@lectusa.com",
+    phoneNumber: "(901) 166-8355",
+    address: "556 Lakewood Park, Bismarck, ND 58505"
+  })
+}).then(r => r.json())
+  .then(data => console.log(data));
+
+-- PUT in bash --
+curl -X PUT http://localhost:8080/customers/ab27bb60-25f7-44a8-818f-e3f84b53aaa1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerId": "ab27bb60-25f7-44a8-818f-e3f84b53aaa1",
+    "firstName": "Cally",
+    "lastName": "Reynolds",
+    "emailAddress": "penatibus.et@lectusa.com",
+    "phoneNumber": "(901) 166-8355",
+    "address": "556 Lakewood Park, Bismarck, ND 58505"
+  }'
+*/
+
+// UpdateCustomer (cody)
+// how to handle mismatch id, ID != customer.CustomerID.
+// err matches what's in database_customer
+func (s *EchoServer) UpdateCustomer(ctx echo.Context) error {
+	ID := ctx.Param("id")
+	customer := new(models.Customer)
+	if err := ctx.Bind(customer); err != nil {
+		return ctx.JSON(http.StatusUnsupportedMediaType, err)
+	}
+	if ID != customer.CustomerID {
+		return ctx.JSON(http.StatusBadRequest, "id on path doesn't match id on body")
+	}
+	customer, err := s.DB.UpdateCustomer(ctx.Request().Context(), customer)
+	if err != nil {
+		switch err.(type) {
+		case *dberrors.NotFoundError:
+			return ctx.JSON(http.StatusNotFound, err)
+		case *dberrors.ConflictError:
+			return ctx.JSON(http.StatusConflict, err)
+		default:
+			return ctx.JSON(http.StatusInternalServerError, err)
+		}
+	}
+	return ctx.JSON(http.StatusOK, customer)
+}
