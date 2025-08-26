@@ -14,9 +14,20 @@ import (
 // DatabaseClient (cody)
 // we don't use DatabaseClient interface, we use Client struct?
 type DatabaseClient interface {
+	// Ready (cody) in DatabaseClient interface
 	Ready() bool
 
+	// GetAllCustomers (cody) in DatabaseClient interface
 	GetAllCustomers(ctx context.Context, emailAddress string) ([]models.Customer, error)
+
+	// GetAllProducts (cody) in DatabaseClient interface
+	GetAllProducts(ctx context.Context, vendorId string) ([]models.Product, error)
+
+	// GetAllServices (cody) in DatabaseClient interface
+	GetAllServices(ctx context.Context) ([]models.Service, error)
+
+	// GetAllVendors (cody) in DatabaseClient interface
+	GetAllVendors(ctx context.Context) ([]models.Vendor, error)
 }
 
 // Client (cody)

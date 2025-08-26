@@ -6,7 +6,7 @@ import (
 	"github.com/CodyMcCarty/go-microservices/internal/models"
 )
 
-// (cody) on Client model and added to DatabaseClient interface.
+// (cody) /database on Client model and added to DatabaseClient interface.
 // always pass context. it allows you to write handlers in gorm to do specific things, such as if a user id is present, we can update the updatedBy
 // where filter is conditional. if no email is passed, it won't use it
 // is on client, pass ctx & email, return slice cust & err
