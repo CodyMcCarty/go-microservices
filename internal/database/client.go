@@ -20,6 +20,7 @@ type DatabaseClient interface {
 	// GetAllCustomers (cody) in DatabaseClient interface
 	GetAllCustomers(ctx context.Context, emailAddress string) ([]models.Customer, error)
 	AddCustomer(ctx context.Context, customer *models.Customer) (*models.Customer, error)
+	GetCustomerById(ctx context.Context, ID string) (*models.Customer, error)
 
 	// GetAllProducts (cody) in DatabaseClient interface
 	GetAllProducts(ctx context.Context, vendorId string) ([]models.Product, error)
