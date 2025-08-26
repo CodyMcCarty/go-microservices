@@ -81,6 +81,7 @@ http://localhost:8080/customers/f4a8473b-23cf-4084-83e3-7fd03ac43e36
 // I'm a little confused when they use ptr vs data, ie *error in this case.
 // NotFound only works when changing the ID, but the len remains the same. "record not found". should it look more like the other errors (see next comment)?
 // if I put in !len, the console prints out the error "ERROR: invalid input syntax for type uuid: "f4a8473b-23cf-4084-83e3-7fd03ac43e3" (SQLSTATE 22P02)"
+// could use  ctx.Response().Status?
 func (s *EchoServer) GetCustomerById(ctx echo.Context) error {
 	ID := ctx.Param("id")
 	customer, err := s.DB.GetCustomerById(ctx.Request().Context(), ID)

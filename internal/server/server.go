@@ -30,14 +30,17 @@ type Server interface {
 	// GetAllProducts (cody) in Server interface
 	GetAllProducts(ctx echo.Context) error
 	AddProduct(ctx echo.Context) error
+	GetProductById(ctx echo.Context) error
 
 	// GetAllServices (cody) in Server interface
 	GetAllServices(ctx echo.Context) error
 	AddService(ctx echo.Context) error
+	GetServiceById(ctx echo.Context) error
 
 	// GetAllVendors (cody) in Server interface
 	GetAllVendors(ctx echo.Context) error
 	AddVendor(ctx echo.Context) error
+	GetVendorById(ctx echo.Context) error
 }
 
 // (cody)
@@ -57,14 +60,17 @@ func (s *EchoServer) registerRoutes() {
 	pg := s.echo.Group("/products")
 	pg.GET("", s.GetAllProducts)
 	pg.POST("", s.AddProduct)
+	pg.GET("/:id", s.GetProductById)
 
 	sg := s.echo.Group("/services")
 	sg.GET("", s.GetAllServices)
 	sg.POST("", s.AddService)
+	sg.GET("/:id", s.GetServiceById)
 
 	vg := s.echo.Group("/vendors")
 	vg.GET("", s.GetAllVendors)
 	vg.POST("", s.AddVendor)
+	vg.GET("/:id", s.GetVendorById)
 }
 
 // EchoServer (cody)
