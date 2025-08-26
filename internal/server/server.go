@@ -9,20 +9,27 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// Server (cody)
+// Server interface & EchoServer struct
+// Readiness and Liveness checks like in kubernetes
 type Server interface {
 	Start() error
-	// Readiness and Liveness checks like in kubernetes
 	Readiness(ctx echo.Context) error
 	Liveness(ctx echo.Context) error
+
+	GetAllCustomers(ctx echo.Context) error
 }
 
+// EchoServer (cody)
+// Server interface & EchoServer struct
 type EchoServer struct {
 	echo *echo.Echo
 	DB   database.DatabaseClient
 }
 
+// NewEchoServer (cody)
+// he set it up this way for testing 1.SetUpEchoClient 1:27. We're not testing in this course. Can inject a mock
 func NewEchoServer(db database.DatabaseClient) Server {
-	// he set it up this way for testing 1.SetUpEchoClient 1:27. We're not testing in this course. Can inject a mock
 	server := &EchoServer{
 		echo: echo.New(),
 		DB:   db,
@@ -31,8 +38,9 @@ func NewEchoServer(db database.DatabaseClient) Server {
 	return server
 }
 
+// (cody)
+// we should: port 8080 from config 1.setupEchoClient 2:50
 func (s *EchoServer) Start() error {
-	// todo port 8080 from config 1.setupEchoClient 2:50
 	if err := s.echo.Start(":8080"); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("server shutdown occurred %s", err)
 		return err
@@ -40,11 +48,19 @@ func (s *EchoServer) Start() error {
 	return nil
 }
 
+// (cody)
+// creates a customer group. not necessary and doesn't make sense for simple method. 2.GetAllOp 5:40. As build more methods, becomes more useful especially if passing middleware. we won't have any middleware
+// at customers with nothing but the prefix a GET op will call GetAllCustomers.
+// /customers?emailAddress=nibh@ultricesposuere.edu. let's do breakpoints and step through code.
 func (s *EchoServer) registerRoutes() {
 	s.echo.GET("/readiness", s.Readiness)
 	s.echo.GET("/liveness", s.Liveness)
+
+	cg := s.echo.Group("/customers")
+	cg.GET("", s.GetAllCustomers)
 }
 
+// Readiness (cody)
 func (s *EchoServer) Readiness(ctx echo.Context) error {
 	ready := s.DB.Ready()
 	if ready {
@@ -53,6 +69,7 @@ func (s *EchoServer) Readiness(ctx echo.Context) error {
 	return ctx.JSON(http.StatusServiceUnavailable, models.Health{Status: "Failure"})
 }
 
+// Liveness (cody)
 func (s *EchoServer) Liveness(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, models.Health{Status: "OK"})
 }
