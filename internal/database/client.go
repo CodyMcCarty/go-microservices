@@ -27,6 +27,7 @@ type DatabaseClient interface {
 
 	// GetAllServices (cody) in DatabaseClient interface
 	GetAllServices(ctx context.Context) ([]models.Service, error)
+	AddService(ctx context.Context, service *models.Service) (*models.Service, error)
 
 	// GetAllVendors (cody) in DatabaseClient interface
 	GetAllVendors(ctx context.Context) ([]models.Vendor, error)
