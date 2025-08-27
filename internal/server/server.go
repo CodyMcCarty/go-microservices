@@ -27,6 +27,7 @@ type Server interface {
 	AddCustomer(ctx echo.Context) error
 	GetCustomerById(ctx echo.Context) error
 	UpdateCustomer(ctx echo.Context) error
+	DeleteCustomer(ctx echo.Context) error
 
 	// GetAllProducts (cody) in Server interface
 	GetAllProducts(ctx echo.Context) error
@@ -44,6 +45,13 @@ type Server interface {
 	GetVendorById(ctx echo.Context) error
 }
 
+// EchoServer (cody)
+// Server interface & EchoServer struct
+type EchoServer struct {
+	echo *echo.Echo
+	DB   database.DatabaseClient
+}
+
 // (cody)
 // creates a customer group. not necessary and doesn't make sense for simple method. 2.GetAllOp 5:40. As build more methods, becomes more useful especially if passing middleware. we won't have any middleware
 // at customers with nothing but the prefix a GET op will call GetAllCustomers.
@@ -58,6 +66,7 @@ func (s *EchoServer) registerRoutes() {
 	cg.POST("", s.AddCustomer)
 	cg.GET("/:id", s.GetCustomerById)
 	cg.PUT("/:id", s.UpdateCustomer)
+	cg.DELETE("/:id", s.DeleteCustomer)
 
 	pg := s.echo.Group("/products")
 	pg.GET("", s.GetAllProducts)
@@ -73,13 +82,6 @@ func (s *EchoServer) registerRoutes() {
 	vg.GET("", s.GetAllVendors)
 	vg.POST("", s.AddVendor)
 	vg.GET("/:id", s.GetVendorById)
-}
-
-// EchoServer (cody)
-// Server interface & EchoServer struct
-type EchoServer struct {
-	echo *echo.Echo
-	DB   database.DatabaseClient
 }
 
 // NewEchoServer (cody)

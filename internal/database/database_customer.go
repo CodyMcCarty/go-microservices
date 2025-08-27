@@ -62,6 +62,7 @@ func (c Client) GetCustomerById(ctx context.Context, ID string) (*models.Custome
 // why are the err switch err.(type) sometimes and if errors.Is other times?
 // we return [0] to be sure that we get the obj that returns. 2.UpdateOp 4:30. what does that mean?
 // the way he does it is broken. I bandaid it. Need to find propper way.
+// what is allowed to be updated vs retaining some fields and not updating them. 2.ChUpdate 0:20 & what to use as a patch instead of a put. service only has a few fields instead of PUT do a PATCH.
 func (c Client) UpdateCustomer(ctx context.Context, customer *models.Customer) (*models.Customer, error) {
 	var customers []models.Customer
 
@@ -88,4 +89,10 @@ func (c Client) UpdateCustomer(ctx context.Context, customer *models.Customer) (
 	}
 
 	return &customers[0], nil
+}
+
+func (c Client) DeleteCustomer(ctx context.Context, ID string) error {
+	return c.DB.WithContext(ctx).
+		Delete(&models.Customer{CustomerID: ID}).
+		Error
 }

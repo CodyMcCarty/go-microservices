@@ -10,6 +10,8 @@ import (
 
 // GetAllCustomers (cody) /server
 // we pass echo.Context instead of context.Context
+// he sometimes calls thesethings the service i.e. the customer service
+// by email http://localhost:8080/customers?emailAddress=penatibus.et@lectusa.com
 func (s *EchoServer) GetAllCustomers(ctx echo.Context) error {
 	emailAddress := ctx.QueryParam("emailAddress")
 
@@ -150,4 +152,47 @@ func (s *EchoServer) UpdateCustomer(ctx echo.Context) error {
 		}
 	}
 	return ctx.JSON(http.StatusOK, customer)
+}
+
+/* DELETE in chrome console
+first get one with http://localhost:8080/customers?emailAddress=penatibus.et@lectusa.com
+
+const id = "ab27bb60-25f7-44a8-818f-e3f84b53aaa1";
+
+fetch(`http://localhost:8080/customers/${id}`, {
+  method: "DELETE"
+})
+.then(res => {
+  console.log("status:", res.status); // expect 205
+  return res.text();                   // no body expected
+})
+.then(txt => console.log("body:", txt))
+.catch(err => console.error(err));
+
+-- DELETE in bash --
+ID=ab27bb60-25f7-44a8-818f-e3f84b53aaa1
+curl -i -X DELETE "http://localhost:8080/customers/$ID"
+
+-- re-add them back? --
+curl -X POST http://localhost:8080/customers \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "Cally",
+    "lastName": "Reynolds",
+    "emailAddress": "penatibus.et@lectusa.com",
+    "phoneNumber": "(901) 166-8355",
+    "address": "1556 Lakewood Park, Bismarck, ND 58505"
+  }'
+
+*/
+
+// DeleteCustomer (cody)
+// needs err handling. what if the obj doesn't exist (that can be valid)?
+func (s *EchoServer) DeleteCustomer(ctx echo.Context) error {
+	ID := ctx.Param("id")
+	err := s.DB.DeleteCustomer(ctx.Request().Context(), ID)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err)
+	}
+	return ctx.NoContent(http.StatusResetContent)
 }

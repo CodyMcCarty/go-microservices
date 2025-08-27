@@ -13,6 +13,10 @@ multiple dbs
 main app with 1 or 2 microservices.
 config file, along with other comments in *customer
 logs to include which user updated customer and when, etc.
+config with env var (kelsey Hightower or Seth Vargo) 3.BuildDockerImage 1:30
+middleware 3.middleware. CORS
+testing, swaggo swagger,
+call another service, google login,
 */
 
 func main() {
